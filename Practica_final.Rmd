@@ -1,0 +1,104 @@
+---
+title: "Practica final"
+author: "Alejandro Jodra Aparicio"
+date: "20/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Para hacer el ejercicio debemos instalar el paquete de “palmerpenguins”
+
+```{r}
+#install.packages("palmerpenguins")
+
+library(palmerpenguins)
+data(package = 'palmerpenguins')
+head(penguins)
+```
+
+## Ejercicio1
+
+Número de individuos totales, masculinos y femeninos por especie.
+
+```{r}
+library(tidyverse)
+
+count(penguins)
+penguins %>%
+  count(species,sex)
+```
+
+La media, desviación estándar, valor mínimo y máximo de la longitud y profundidad del pico, la longitud de la aleta y el tamaño.
+
+```{r}
+penguins %>%
+  group_by(species) %>%
+  summarize(across(where(is.numeric), mean, na.rm = TRUE))
+penguins %>%
+  group_by(species) %>%
+  summarize(across(where(is.numeric), min, na.rm = TRUE))
+penguins %>%
+  group_by(species) %>%
+  summarize(across(where(is.numeric), max, na.rm = TRUE))
+penguins %>%
+  group_by(species) %>%
+  summarize(across(where(is.numeric), sd, na.rm = TRUE))
+```
+
+## Ejercicio2
+
+Gráfico de barras que represente el número de individuos muestreados de cada especie en cada isla, representando las especies en diferentes colores (chinstrap – morado, gentoo – azul, adelie – naranja). 
+
+```{r island_hist, echo=TRUE}
+library(ggplot2)
+
+island_hist <- ggplot(data = penguins, aes(x = island )) +
+  geom_histogram(aes(fill = species),
+                 alpha = 0.5,
+                 position = "identity",
+                 stat = "count") +
+  scale_fill_manual(values = c("darkorange","purple","cyan4")) +
+  theme_minimal() +
+  labs(x = "island",
+       y = "Frequency",
+       title = "flipper number")
+
+plot(island_hist)
+```
+
+__¿qué especie se ha muestreado en las tres islas?__
+
+Adelie
+
+__¿cuántos individuos se han muestreado de la isla Dream?__
+
+124
+
+## Ejercicio3
+
+Gráfico multipanel de cajas y bigotes del tamaño de los pingüinos según su sexo, donde aparezca un panel para cada especie.
+
+```{r length_box, echo=TRUE}
+
+length_box <- ggplot(data = penguins, aes(x = sex, y = flipper_length_mm)) +
+  geom_boxplot(aes(color = species), width = 0.6, show.legend = TRUE) +
+  geom_jitter(aes(color = species), alpha = 0.7, show.legend = FALSE, position = position_jitter(width = 0.3, seed = 0)) +
+  scale_color_manual(values = c("darkorange","purple","cyan4")) +
+  theme_minimal() +
+  labs(x = "Sex",
+       y = "Flipper length (mm)")
+
+plot(length_box)
+```
+
+__¿qué especie tiene mayor tamaño?__
+
+Gentoo
+
+__¿en qué especie las hembras y los machos tienen un tamaño más similar?__
+
+Adelie
+
